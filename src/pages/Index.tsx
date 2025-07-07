@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, TrendingUp, Clock, FileText, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import KeywordCard from '@/components/KeywordCard';
 import ArticlesList from '@/components/ArticlesList';
 import NGramChart from '@/components/NGramChart';
@@ -89,17 +89,17 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
-  // Transform n-grams data for the chart
+  // Transform ALL n-grams data for the chart (top 15 for better visualization)
   const topNGrams = Object.entries(mockData["n-grams"])
     .map(([phrase, score]) => ({ phrase, score: Number(score.toFixed(2)) }))
-    .slice(0, 8);
+    .slice(0, 15);
 
-  // Transform keywords data for the cards
-  const keywordsWithMetadata = mockData.keywords.slice(0, 8).map((keyword, index) => ({
+  // Transform ALL keywords data for the cards
+  const keywordsWithMetadata = mockData.keywords.map((keyword, index) => ({
     id: index + 1,
     word: keyword,
-    count: Math.floor(Math.random() * 100) + 50, // Random count for demonstration
-    trend: ["up", "down", "stable"][Math.floor(Math.random() * 3)] as "up" | "down" | "stable"
+    count: Math.floor(Math.random() * 100) + 50,
+    trend: (["up", "down", "stable"] as const)[Math.floor(Math.random() * 3)]
   }));
 
   const handleKeywordClick = (keyword: string) => {
@@ -204,36 +204,44 @@ const Index = () => {
               </Card>
             </div>
 
-            {/* N-grams Chart */}
-            <Card className="bg-white/70 backdrop-blur-sm border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-gray-800">Top N-grams</CardTitle>
-                <CardDescription>Most frequently occurring phrase combinations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <NGramChart data={topNGrams} />
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* N-grams Chart */}
+              <Card className="bg-white/70 backdrop-blur-sm border-purple-200">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold text-gray-800">Top N-grams</CardTitle>
+                  <CardDescription>Most frequently occurring phrase combinations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-96">
+                    <NGramChart data={topNGrams} />
+                  </ScrollArea>
+                </CardContent>
+              </Card>
 
-            {/* Keywords Grid */}
-            <Card className="bg-white/70 backdrop-blur-sm border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-gray-800">Trending Keywords</CardTitle>
-                <CardDescription>Click on any keyword to view related articles</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {keywordsWithMetadata.map((keyword) => (
-                    <KeywordCard
-                      key={keyword.id}
-                      keyword={keyword}
-                      onClick={() => handleKeywordClick(keyword.word)}
-                      isSelected={selectedKeyword === keyword.word}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              {/* Keywords Grid */}
+              <Card className="bg-white/70 backdrop-blur-sm border-purple-200">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold text-gray-800">
+                    Trending Keywords ({keywordsWithMetadata.length})
+                  </CardTitle>
+                  <CardDescription>Click on any keyword to view related articles</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-96">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pr-4">
+                      {keywordsWithMetadata.map((keyword) => (
+                        <KeywordCard
+                          key={keyword.id}
+                          keyword={keyword}
+                          onClick={() => handleKeywordClick(keyword.word)}
+                          isSelected={selectedKeyword === keyword.word}
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Articles List */}
             {selectedKeyword && (
