@@ -7,7 +7,7 @@ interface DataEntry {
 
 interface EntityResponse {
   entity: {
-    entries: DataEntry[];
+    entries: string[]; // This is actually an array of file path strings
   };
 }
 
@@ -33,16 +33,23 @@ export const fetchLatestNewsData = async (): Promise<NewsData> => {
       throw new Error('No data entries found');
     }
 
-    // Step 2: Find the latest entry based on name format (yyyy-mm-dd-hh-mm-ss)
+    console.log('All entries:', entries);
+
+    // Step 2: Find the latest entry based on filename format (yyyy-mm-dd-hh-mm-ss)
+    // Extract the filename from the full path and sort by timestamp
     const latestEntry = entries
-      .filter(entry => entry.name.match(/^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$/))
-      .sort((a, b) => b.name.localeCompare(a.name))[0];
+      .map(filePath => {
+        const filename = filePath.split('/').pop()?.replace('.json', '') || '';
+        return { path: filePath, filename };
+      })
+      .filter(entry => entry.filename.match(/^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}$/))
+      .sort((a, b) => b.filename.localeCompare(a.filename))[0];
 
     if (!latestEntry) {
       throw new Error('No valid data files found');
     }
 
-    console.log('Latest data file:', latestEntry.name);
+    console.log('Latest data file:', latestEntry.filename, 'Path:', latestEntry.path);
 
     // Step 3: Fetch the actual data file content
     const dataResponse = await fetch(`https://metis.texcorver.com/dataset-manager/file?key=${latestEntry.path}`);
