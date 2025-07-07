@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search, TrendingUp, Clock, FileText, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,71 +11,96 @@ import ArticlesList from '@/components/ArticlesList';
 import NGramChart from '@/components/NGramChart';
 import SearchResults from '@/components/SearchResults';
 
-// Mock data - in a real app, this would come from an API
+// Mock data matching the provided JSON structure
 const mockData = {
-  totalArticles: 1247,
-  topNGrams: [
-    { phrase: "artificial intelligence", score: 95 },
-    { phrase: "climate change", score: 87 },
-    { phrase: "economic growth", score: 82 },
-    { phrase: "social media", score: 78 },
-    { phrase: "renewable energy", score: 75 },
-    { phrase: "healthcare system", score: 72 },
-    { phrase: "data privacy", score: 68 },
-    { phrase: "digital transformation", score: 65 }
-  ],
+  number_of_articles: 274,
+  "n-grams": {
+    "tỷ đồng": 1.6051881864434925,
+    "tp hcm": 1.411935905661814,
+    "vụ cháy": 1.401159489281045,
+    "ban chỉ_đạo": 1.1548017768799819,
+    "triệu usd": 1.118497000154886,
+    "trúc linh": 1.0673810834924031,
+    "giá vàng": 1.0499132135403921,
+    "bạch mai": 0.9546361355541184,
+    "triệu đồng": 0.9274934757913568,
+    "club world_cup": 0.9205346395073283,
+    "elon musk": 0.9156956375138791,
+    "bệnh_viện bạch mai": 0.9084440644789192,
+    "fifa club": 0.8182530128954029,
+    "hà trúc linh": 0.8055706290508702,
+    "phạm minh": 0.7841591373580945,
+    "fifa club world_cup": 0.7841591373580945
+  },
   keywords: [
-    { id: 1, word: "AI", count: 156, trend: "up" as const },
-    { id: 2, word: "Climate", count: 134, trend: "up" as const },
-    { id: 3, word: "Economy", count: 128, trend: "down" as const },
-    { id: 4, word: "Technology", count: 112, trend: "up" as const },
-    { id: 5, word: "Health", count: 98, trend: "stable" as const },
-    { id: 6, word: "Energy", count: 89, trend: "up" as const },
-    { id: 7, word: "Politics", count: 76, trend: "down" as const },
-    { id: 8, word: "Education", count: 67, trend: "up" as const }
+    "FIFA Club World Cup",
+    "Thủ tướng Phạm Minh",
+    "Bệnh viện Bạch Mai",
+    "Phòng chống tham nhũng, lãng phí, tiêu cực",
+    "Elon Musk",
+    "Lũ quét Texas",
+    "Prudential Việt Nam",
+    "Đại học Bách Khoa",
+    "Giá vàng",
+    "Hà Trúc Linh",
+    "Khoa học Công nghệ",
+    "Đổi mới Sáng tạo",
+    "Jurassic World",
+    "Sông Guadalupe",
+    "Phương Oanh",
+    "Bệnh viện Việt Đức",
+    "Mai Việt Đức",
+    "Quang Liêm",
+    "Võ Chí Công",
+    "Hạt Kerr"
+  ]
+};
+
+// Mock articles data for demonstration
+const mockArticles: { [key: string]: any[] } = {
+  "FIFA Club World Cup": [
+    {
+      id: 1,
+      url: "https://example.com/fifa-club-world-cup",
+      title: "FIFA Club World Cup 2024: Exciting matches ahead",
+      publishedTime: "2024-07-07T08:30:00Z"
+    }
   ],
-  articles: {
-    "AI": [
-      {
-        id: 1,
-        url: "https://example.com/ai-breakthrough",
-        title: "Major AI Breakthrough in Medical Diagnosis",
-        publishedTime: "2024-07-07T08:30:00Z"
-      },
-      {
-        id: 2,
-        url: "https://example.com/ai-ethics",
-        title: "New AI Ethics Guidelines Released by Tech Giants",
-        publishedTime: "2024-07-07T06:15:00Z"
-      },
-      {
-        id: 3,
-        url: "https://example.com/ai-jobs",
-        title: "How AI is Transforming the Job Market",
-        publishedTime: "2024-07-06T22:45:00Z"
-      }
-    ],
-    "Climate": [
-      {
-        id: 4,
-        url: "https://example.com/climate-summit",
-        title: "Global Climate Summit Reaches Historic Agreement",
-        publishedTime: "2024-07-07T10:20:00Z"
-      },
-      {
-        id: 5,
-        url: "https://example.com/climate-tech",
-        title: "Revolutionary Climate Technology Shows Promise",
-        publishedTime: "2024-07-07T07:30:00Z"
-      }
-    ]
-  }
+  "Elon Musk": [
+    {
+      id: 2,
+      url: "https://example.com/elon-musk-news",
+      title: "Elon Musk announces new technology breakthrough",
+      publishedTime: "2024-07-07T06:15:00Z"
+    }
+  ],
+  "Giá vàng": [
+    {
+      id: 3,
+      url: "https://example.com/gold-price",
+      title: "Giá vàng tăng mạnh trong phiên giao dịch hôm nay",
+      publishedTime: "2024-07-07T10:20:00Z"
+    }
+  ]
 };
 
 const Index = () => {
   const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+
+  // Transform n-grams data for the chart
+  const topNGrams = Object.entries(mockData["n-grams"])
+    .map(([phrase, score]) => ({ phrase, score: Number(score.toFixed(2)) }))
+    .slice(0, 8);
+
+  // Transform keywords data for the cards
+  const keywordsWithMetadata = mockData.keywords.slice(0, 8).map((keyword, index) => ({
+    id: index + 1,
+    word: keyword,
+    count: Math.floor(Math.random() * 100) + 50, // Random count for demonstration
+    trend: ["up", "down", "stable"][Math.floor(Math.random() * 3)] as "up" | "down" | "stable"
+  }));
 
   const handleKeywordClick = (keyword: string) => {
     setSelectedKeyword(keyword);
@@ -150,7 +176,7 @@ const Index = () => {
                   <FileText className="h-4 w-4 text-purple-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-800">{mockData.totalArticles.toLocaleString()}</div>
+                  <div className="text-3xl font-bold text-purple-800">{mockData.number_of_articles.toLocaleString()}</div>
                   <p className="text-xs text-gray-600 mt-1">Analyzed in last 24h</p>
                 </CardContent>
               </Card>
@@ -161,7 +187,7 @@ const Index = () => {
                   <TrendingUp className="h-4 w-4 text-blue-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-800">{mockData.keywords.length}</div>
+                  <div className="text-3xl font-bold text-blue-800">{keywordsWithMetadata.length}</div>
                   <p className="text-xs text-gray-600 mt-1">Trending topics</p>
                 </CardContent>
               </Card>
@@ -172,7 +198,7 @@ const Index = () => {
                   <BarChart3 className="h-4 w-4 text-indigo-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-indigo-800">{mockData.topNGrams[0].score}</div>
+                  <div className="text-3xl font-bold text-indigo-800">{topNGrams[0]?.score || 0}</div>
                   <p className="text-xs text-gray-600 mt-1">Highest n-gram score</p>
                 </CardContent>
               </Card>
@@ -185,7 +211,7 @@ const Index = () => {
                 <CardDescription>Most frequently occurring phrase combinations</CardDescription>
               </CardHeader>
               <CardContent>
-                <NGramChart data={mockData.topNGrams} />
+                <NGramChart data={topNGrams} />
               </CardContent>
             </Card>
 
@@ -197,7 +223,7 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {mockData.keywords.map((keyword) => (
+                  {keywordsWithMetadata.map((keyword) => (
                     <KeywordCard
                       key={keyword.id}
                       keyword={keyword}
@@ -213,7 +239,7 @@ const Index = () => {
             {selectedKeyword && (
               <ArticlesList
                 keyword={selectedKeyword}
-                articles={mockData.articles[selectedKeyword as keyof typeof mockData.articles] || []}
+                articles={mockArticles[selectedKeyword] || []}
                 onClose={() => setSelectedKeyword(null)}
               />
             )}
