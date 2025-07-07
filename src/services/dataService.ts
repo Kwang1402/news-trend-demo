@@ -52,7 +52,7 @@ export const fetchLatestNewsData = async (): Promise<NewsData> => {
     console.log('Latest data file:', latestEntry.filename, 'Path:', latestEntry.path);
 
     // Step 3: Fetch the actual data file content
-    const dataResponse = await fetch(`https://metis.texcorver.com/dataset-manager/file?key=${latestEntry.path}`);
+    const dataResponse = await fetch(`https://metis.texcorver.com/dataset-manager/files?key=${latestEntry.path}`);
     
     if (!dataResponse.ok) {
       throw new Error(`Failed to fetch data file: ${dataResponse.statusText}`);

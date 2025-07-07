@@ -153,7 +153,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                  TrendScope
+                  Metis Trending
                 </h1>
                 <p className="text-sm text-gray-600">News Keyword Analytics</p>
               </div>
