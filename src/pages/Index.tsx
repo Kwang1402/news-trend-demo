@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, TrendingUp, Clock, FileText, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,14 +24,14 @@ const mockData = {
     { phrase: "digital transformation", score: 65 }
   ],
   keywords: [
-    { id: 1, word: "AI", count: 156, trend: "up" },
-    { id: 2, word: "Climate", count: 134, trend: "up" },
-    { id: 3, word: "Economy", count: 128, trend: "down" },
-    { id: 4, word: "Technology", count: 112, trend: "up" },
-    { id: 5, word: "Health", count: 98, trend: "stable" },
-    { id: 6, word: "Energy", count: 89, trend: "up" },
-    { id: 7, word: "Politics", count: 76, trend: "down" },
-    { id: 8, word: "Education", count: 67, trend: "up" }
+    { id: 1, word: "AI", count: 156, trend: "up" as const },
+    { id: 2, word: "Climate", count: 134, trend: "up" as const },
+    { id: 3, word: "Economy", count: 128, trend: "down" as const },
+    { id: 4, word: "Technology", count: 112, trend: "up" as const },
+    { id: 5, word: "Health", count: 98, trend: "stable" as const },
+    { id: 6, word: "Energy", count: 89, trend: "up" as const },
+    { id: 7, word: "Politics", count: 76, trend: "down" as const },
+    { id: 8, word: "Education", count: 67, trend: "up" as const }
   ],
   articles: {
     "AI": [
