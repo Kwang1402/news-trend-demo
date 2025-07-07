@@ -1,60 +1,18 @@
-import React, { useState } from 'react';
-import { Search, TrendingUp, Clock, FileText, BarChart3 } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import { Search, TrendingUp, Clock, FileText, BarChart3, Loader2, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import KeywordCard from '@/components/KeywordCard';
 import ArticlesList from '@/components/ArticlesList';
 import NGramChart from '@/components/NGramChart';
 import SearchResults from '@/components/SearchResults';
-
-// Mock data matching the provided JSON structure
-const mockData = {
-  number_of_articles: 274,
-  "n-grams": {
-    "tỷ đồng": 1.6051881864434925,
-    "tp hcm": 1.411935905661814,
-    "vụ cháy": 1.401159489281045,
-    "ban chỉ_đạo": 1.1548017768799819,
-    "triệu usd": 1.118497000154886,
-    "trúc linh": 1.0673810834924031,
-    "giá vàng": 1.0499132135403921,
-    "bạch mai": 0.9546361355541184,
-    "triệu đồng": 0.9274934757913568,
-    "club world_cup": 0.9205346395073283,
-    "elon musk": 0.9156956375138791,
-    "bệnh_viện bạch mai": 0.9084440644789192,
-    "fifa club": 0.8182530128954029,
-    "hà trúc linh": 0.8055706290508702,
-    "phạm minh": 0.7841591373580945,
-    "fifa club world_cup": 0.7841591373580945
-  },
-  keywords: [
-    "FIFA Club World Cup",
-    "Thủ tướng Phạm Minh",
-    "Bệnh viện Bạch Mai",
-    "Phòng chống tham nhũng, lãng phí, tiêu cực",
-    "Elon Musk",
-    "Lũ quét Texas",
-    "Prudential Việt Nam",
-    "Đại học Bách Khoa",
-    "Giá vàng",
-    "Hà Trúc Linh",
-    "Khoa học Công nghệ",
-    "Đổi mới Sáng tạo",
-    "Jurassic World",
-    "Sông Guadalupe",
-    "Phương Oanh",
-    "Bệnh viện Việt Đức",
-    "Mai Việt Đức",
-    "Quang Liêm",
-    "Võ Chí Công",
-    "Hạt Kerr"
-  ]
-};
+import { fetchLatestNewsData } from '@/services/dataService';
 
 // Mock articles data for demonstration
 const mockArticles: { [key: string]: any[] } = {
@@ -85,29 +43,48 @@ const mockArticles: { [key: string]: any[] } = {
 };
 
 const Index = () => {
+  const [newsData, setNewsData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
 
-  // Transform ALL n-grams data for the chart (top 15 for better visualization)
-  const topNGrams = Object.entries(mockData["n-grams"])
-    .map(([phrase, score]) => ({ phrase, score: Number(score.toFixed(2)) }))
-    .slice(0, 15);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchLatestNewsData();
+        setNewsData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load data');
+        console.error('Error loading news data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Transform ALL keywords data for the cards
-  const keywordsWithMetadata = mockData.keywords.map((keyword, index) => ({
+    loadData();
+  }, []);
+
+  // Transform data for display
+  const topNGrams = newsData ? Object.entries(newsData["n-grams"])
+    .map(([phrase, score]) => ({ phrase, score: Number((score as number).toFixed(2)) }))
+    .slice(0, 15) : [];
+
+  const keywordsWithMetadata = newsData ? newsData.keywords.map((keyword: string, index: number) => ({
     id: index + 1,
     word: keyword,
     count: Math.floor(Math.random() * 100) + 50,
     trend: (["up", "down", "stable"] as const)[Math.floor(Math.random() * 3)]
-  }));
+  })) : [];
 
   const handleKeywordClick = (keyword: string) => {
     setSelectedKeyword(keyword);
   };
 
   const handleSearch = () => {
-    // Mock search functionality
     if (searchQuery.trim()) {
       const mockResults = [
         {
@@ -126,6 +103,43 @@ const Index = () => {
       setSearchResults(mockResults);
     }
   };
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <Card className="bg-white/70 backdrop-blur-sm border-purple-200 p-8">
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <p className="text-gray-600">Loading latest news data...</p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+        <Card className="bg-white/70 backdrop-blur-sm border-red-200 max-w-md w-full">
+          <CardContent className="p-6">
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="mb-4">
+                Failed to load news data: {error}
+              </AlertDescription>
+            </Alert>
+            <Button onClick={handleRetry} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
@@ -146,7 +160,7 @@ const Index = () => {
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Clock className="h-4 w-4" />
-              <span>Last 24 hours</span>
+              <span>Live Data</span>
             </div>
           </div>
         </div>
@@ -176,8 +190,8 @@ const Index = () => {
                   <FileText className="h-4 w-4 text-purple-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-800">{mockData.number_of_articles.toLocaleString()}</div>
-                  <p className="text-xs text-gray-600 mt-1">Analyzed in last 24h</p>
+                  <div className="text-3xl font-bold text-purple-800">{newsData?.number_of_articles?.toLocaleString() || 0}</div>
+                  <p className="text-xs text-gray-600 mt-1">Analyzed in dataset</p>
                 </CardContent>
               </Card>
 
