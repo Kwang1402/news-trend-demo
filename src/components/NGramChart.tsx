@@ -50,15 +50,9 @@ const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
           />
           <Bar 
             dataKey="score" 
-            fill="url(#gradient)"
+            fill="#8b5cf6"
             radius={[0, 4, 4, 0]}
           />
-          <defs>
-            <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.9}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.9}/>
-            </linearGradient>
-          </defs>
         </BarChart>
       </ResponsiveContainer>
     </div>
