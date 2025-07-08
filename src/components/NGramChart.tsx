@@ -36,7 +36,8 @@ const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
             dataKey="phrase"
             fontSize={10}
             stroke="#64748b"
-            width={100}
+            width={110}
+            tick={{ fontSize: 10 }}
           />
           <Tooltip
             contentStyle={{
@@ -51,7 +52,6 @@ const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
           <Bar 
             dataKey="score" 
             fill="#8b5cf6"
-            radius={[0, 4, 4, 0]}
           />
         </BarChart>
       </ResponsiveContainer>
