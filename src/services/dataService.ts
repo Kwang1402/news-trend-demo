@@ -29,7 +29,7 @@ interface SearchResponse {
 
 export const searchArticles = async (keyword: string): Promise<SearchResult[]> => {
   try {
-    const response = await fetch(`https://metis.texcorver.com/dataset-manager/search?keyword=${encodeURIComponent(keyword)}`);
+    const response = await fetch(`${import.meta.env.VITE_DATASET_MANAGER_URL}/search?keyword=${encodeURIComponent(keyword)}`);
     
     if (!response.ok) {
       throw new Error(`Failed to search articles: ${response.statusText}`);
@@ -46,7 +46,7 @@ export const searchArticles = async (keyword: string): Promise<SearchResult[]> =
 export const fetchLatestNewsData = async (): Promise<NewsData> => {
   try {
     // Step 1: Get all entries
-    const entriesResponse = await fetch('https://metis.texcorver.com/dataset-manager/entities/a4d6cf8c-0eaf-4010-a17a-d2d14e39b3d2');
+    const entriesResponse = await fetch(`${import.meta.env.VITE_DATASET_MANAGER_URL}/entities/a4d6cf8c-0eaf-4010-a17a-d2d14e39b3d2`);
     
     if (!entriesResponse.ok) {
       throw new Error(`Failed to fetch entries: ${entriesResponse.statusText}`);
@@ -78,7 +78,7 @@ export const fetchLatestNewsData = async (): Promise<NewsData> => {
     console.log('Latest data file:', latestEntry.filename, 'Path:', latestEntry.path);
 
     // Step 3: Fetch the actual data file content
-    const dataResponse = await fetch(`https://metis.texcorver.com/dataset-manager/files?key=${latestEntry.path}`);
+    const dataResponse = await fetch(`${import.meta.env.VITE_DATASET_MANAGER_URL}/files?key=${latestEntry.path}`);
     
     if (!dataResponse.ok) {
       throw new Error(`Failed to fetch data file: ${dataResponse.statusText}`);

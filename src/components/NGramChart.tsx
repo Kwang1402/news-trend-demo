@@ -12,32 +12,31 @@ interface NGramChartProps {
 }
 
 const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
+  // Take only the top 10 items to prevent overcrowding
+  const displayData = data.slice(0, 10);
+  
   return (
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          layout="horizontal"
-          data={data}
-          margin={{
-            top: 20,
-            right: 30,
-            left: 120,
-            bottom: 20,
-          }}
+          layout="vertical"
+          data={displayData} 
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-          <XAxis 
+          <XAxis
             type="number"
             fontSize={12}
             stroke="#64748b"
+            domain={[0, 'dataMax']}
           />
-          <YAxis 
+          <YAxis
             type="category"
             dataKey="phrase"
             fontSize={10}
             stroke="#64748b"
-            width={110}
+            width={60}
             tick={{ fontSize: 10 }}
+            interval={0}
           />
           <Tooltip
             contentStyle={{
@@ -49,9 +48,10 @@ const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
             formatter={(value) => [value, 'Score']}
             labelFormatter={(label) => `Phrase: ${label}`}
           />
-          <Bar 
-            dataKey="score" 
+          <Bar
+            dataKey="score"
             fill="#8b5cf6"
+            radius={[0, 4, 4, 0]}
           />
         </BarChart>
       </ResponsiveContainer>
