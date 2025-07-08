@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -12,12 +11,12 @@ interface NGramChartProps {
 }
 
 const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
-  // Take only the top 10 items to prevent overcrowding
-  const displayData = data.slice(0, 10);
+  // Display all items instead of limiting to 10
+  const displayData = data;
   
   return (
-    <div className="h-80 w-full">
-      <ResponsiveContainer width="100%" height="100%">
+    <div className="h-80 w-full overflow-auto">
+      <ResponsiveContainer width="100%" height={Math.max(320, data.length * 32)}>
         <BarChart
           layout="vertical"
           data={displayData} 
