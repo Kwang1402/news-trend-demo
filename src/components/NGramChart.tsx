@@ -16,26 +16,27 @@ const NGramChart: React.FC<NGramChartProps> = ({ data }) => {
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
+          layout="horizontal"
           data={data}
           margin={{
             top: 20,
             right: 30,
-            left: 20,
-            bottom: 80,
+            left: 120,
+            bottom: 20,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis 
-            dataKey="phrase" 
-            angle={-45}
-            textAnchor="end"
-            height={80}
+            type="number"
             fontSize={12}
             stroke="#64748b"
           />
           <YAxis 
-            fontSize={12}
+            type="category"
+            dataKey="phrase"
+            fontSize={10}
             stroke="#64748b"
+            width={100}
           />
           <Tooltip
             contentStyle={{

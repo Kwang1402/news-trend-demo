@@ -52,17 +52,8 @@ const KeywordCard: React.FC<KeywordCardProps> = ({ keyword, onClick, isSelected 
       onClick={onClick}
     >
       <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-gray-800 truncate">{keyword.word}</h3>
-          {getTrendIcon()}
-        </div>
-        <div className="flex items-center justify-between">
-          <Badge 
-            variant="secondary" 
-            className="bg-purple-100 text-purple-800 hover:bg-purple-200"
-          >
-            {keyword.count} articles
-          </Badge>
+        <div className="flex items-center justify-center">
+          <h3 className="font-semibold text-gray-800 truncate text-center">{keyword.word}</h3>
         </div>
       </CardContent>
     </Card>
