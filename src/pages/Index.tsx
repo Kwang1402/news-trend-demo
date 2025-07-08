@@ -12,7 +12,7 @@ import KeywordCard from '@/components/KeywordCard';
 import ArticlesList from '@/components/ArticlesList';
 import NGramChart from '@/components/NGramChart';
 import SearchResults from '@/components/SearchResults';
-import { fetchLatestNewsData } from '@/services/dataService';
+import { fetchLatestNewsData, searchArticles } from '@/services/dataService';
 
 // Mock articles data for demonstration
 const mockArticles: { [key: string]: any[] } = {
@@ -80,27 +80,26 @@ const Index = () => {
     trend: (["up", "down", "stable"] as const)[Math.floor(Math.random() * 3)]
   })) : [];
 
-  const handleKeywordClick = (keyword: string) => {
+  const handleKeywordClick = async (keyword: string) => {
     setSelectedKeyword(keyword);
+    try {
+      const articles = await searchArticles(keyword);
+      // Update mockArticles with real data for the selected keyword
+      setSearchResults(articles);
+    } catch (error) {
+      console.error('Failed to fetch articles for keyword:', error);
+    }
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (searchQuery.trim()) {
-      const mockResults = [
-        {
-          id: 1,
-          url: "https://example.com/search-result-1",
-          title: `Search result for "${searchQuery}" - Article 1`,
-          publishedTime: "2024-07-07T09:15:00Z"
-        },
-        {
-          id: 2,
-          url: "https://example.com/search-result-2",
-          title: `Latest developments in ${searchQuery}`,
-          publishedTime: "2024-07-07T05:30:00Z"
-        }
-      ];
-      setSearchResults(mockResults);
+      try {
+        const results = await searchArticles(searchQuery);
+        setSearchResults(results);
+      } catch (error) {
+        console.error('Search failed:', error);
+        setSearchResults([]);
+      }
     }
   };
 
@@ -261,8 +260,16 @@ const Index = () => {
             {selectedKeyword && (
               <ArticlesList
                 keyword={selectedKeyword}
-                articles={mockArticles[selectedKeyword] || []}
-                onClose={() => setSelectedKeyword(null)}
+                articles={searchResults.map((article, index) => ({
+                  id: index + 1,
+                  url: article.url,
+                  title: article.title,
+                  publishedTime: article.time
+                }))}
+                onClose={() => {
+                  setSelectedKeyword(null);
+                  setSearchResults([]);
+                }}
               />
             )}
           </TabsContent>

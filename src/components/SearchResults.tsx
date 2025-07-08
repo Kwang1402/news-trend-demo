@@ -5,10 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
 interface SearchResult {
-  id: number;
   url: string;
   title: string;
-  publishedTime: string;
+  time: string;
 }
 
 interface SearchResultsProps {
@@ -52,9 +51,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) => {
             <p className="text-sm text-gray-500 mt-2">Try different keywords or check your spelling</p>
           </div>
         ) : (
-          results.map((result) => (
+          results.map((result, index) => (
             <div
-              key={result.id}
+              key={`${result.url}-${index}`}
               className="p-4 rounded-lg border border-gray-200 bg-white/50 hover:bg-white/80 transition-all duration-300 hover:shadow-md"
             >
               <div className="flex items-start justify-between space-x-4">
@@ -65,7 +64,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) => {
                   <div className="flex items-center space-x-4 text-sm text-gray-600">
                     <div className="flex items-center space-x-1">
                       <Clock className="h-3 w-3" />
-                      <span>{formatTime(result.publishedTime)}</span>
+                      <span>{formatTime(result.time)}</span>
                     </div>
                     <a
                       href={result.url}

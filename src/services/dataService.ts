@@ -17,6 +17,32 @@ interface NewsData {
   keywords: string[];
 }
 
+interface SearchResult {
+  url: string;
+  title: string;
+  time: string;
+}
+
+interface SearchResponse {
+  search_results: SearchResult[];
+}
+
+export const searchArticles = async (keyword: string): Promise<SearchResult[]> => {
+  try {
+    const response = await fetch(`https://metis.texcorver.com/dataset-manager/search?keyword=${encodeURIComponent(keyword)}`);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to search articles: ${response.statusText}`);
+    }
+
+    const data: SearchResponse = await response.json();
+    return data.search_results || [];
+  } catch (error) {
+    console.error('Error searching articles:', error);
+    throw error;
+  }
+};
+
 export const fetchLatestNewsData = async (): Promise<NewsData> => {
   try {
     // Step 1: Get all entries
