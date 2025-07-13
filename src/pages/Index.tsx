@@ -240,8 +240,8 @@ const Index = () => {
                   <CardDescription>Click on any keyword to view related articles</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ScrollArea className="h-96">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pr-4">
+                  <ScrollArea className="h-96 pr-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4">
                       {keywordsWithMetadata.map((keyword) => (
                         <KeywordCard
                           key={keyword.id}
