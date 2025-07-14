@@ -70,7 +70,7 @@ const Index = () => {
 
   // Transform data for display
   const topNGrams = newsData ? Object.entries(newsData["n-grams"])
-    .map(([phrase, score]) => ({ phrase, score: Number((score as number).toFixed(2)) }))
+    .map(([phrase, score]) => ({ phrase, score: Number((score as number).toFixed(4)) }))
     .sort((a, b) => b.score - a.score) : [];
 
   const keywordsWithMetadata = newsData ? newsData.keywords.map((keyword: string, index: number) => ({
